@@ -2,10 +2,10 @@ import Foundation
 
 extension URLRequest {
 
-    var headers: HTTPHeaders {
+    var headers: Headers {
         get {
             return self.allHTTPHeaderFields.map { namesAndValues in
-                return HTTPHeaders(
+                return Headers(
                     headers: namesAndValues.map { (name, value) in
                         return .init(name: name, value: value)
                     }

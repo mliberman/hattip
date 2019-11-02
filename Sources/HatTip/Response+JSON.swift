@@ -1,6 +1,6 @@
 import Foundation
 
-enum HTTPResponseError: Error {
+enum ResponseError: Error {
 
     case noBody
     case fileError(Error)
@@ -8,14 +8,14 @@ enum HTTPResponseError: Error {
     case serverError(String)
 }
 
-protocol HTTPServerResponseError: Error, Decodable, CustomStringConvertible { }
+protocol ServerResponseError: Error, Decodable, CustomStringConvertible { }
 
-extension HTTPResponse {
+extension Response {
 
-    func decodeError<E: HTTPServerResponseError>(
+    func decodeError<E: ServerResponseError>(
         _ errorType: E.Type = E.self,
         using decoder: JSONDecoder
-        ) -> Result<HTTPResponse, HTTPResponseError> {
+        ) -> Result<Response, ResponseError> {
 
         guard self.statusCode >= 400 else { return .success(self) }
         guard let body = self.body else { return .failure(.noBody) }
@@ -35,7 +35,7 @@ extension HTTPResponse {
     func decode<R: Decodable>(
         _ responseType: R.Type = R.self,
         using decoder: JSONDecoder
-        ) -> Result<R, HTTPResponseError> {
+        ) -> Result<R, ResponseError> {
 
         guard let body = self.body else { return .failure(.noBody) }
         do {
@@ -51,11 +51,11 @@ extension HTTPResponse {
         }
     }
 
-    func decode<R: Decodable, E: HTTPServerResponseError>(
+    func decode<R: Decodable, E: ServerResponseError>(
         _ responseType: R.Type = R.self,
         _ errorType: E.Type = E.self,
         using decoder: JSONDecoder
-        ) -> Result<R, HTTPResponseError> {
+        ) -> Result<R, ResponseError> {
 
         return self
             .decodeError(E.self, using: decoder)

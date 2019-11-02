@@ -1,16 +1,16 @@
 import Foundation
 
-enum HTTPMessageBody {
+enum MessageBody {
     case file(URL)
     case data(Data)
 }
 
-protocol HTTPMessage {
-    var headers: HTTPHeaders { get set }
-    var body: HTTPMessageBody? { get set }
+protocol Message {
+    var headers: Headers { get set }
+    var body: MessageBody? { get set }
 }
 
-extension HTTPMessageBody {
+extension MessageBody {
 
     func read() throws -> Data {
         switch self {

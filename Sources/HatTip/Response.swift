@@ -1,17 +1,17 @@
 import Foundation
 
-struct HTTPResponse: HTTPMessage {
+struct Response: Message {
     var statusCode: Int
-    var headers: HTTPHeaders = []
-    var body: HTTPMessageBody?
+    var headers: Headers = []
+    var body: MessageBody?
 }
 
-extension HTTPResponse {
+extension Response {
 
-    init(body: HTTPMessageBody?, response: URLResponse?, error: Error?) throws {
+    init(body: MessageBody?, response: URLResponse?, error: Error?) throws {
         if let error = error { throw error }
         guard let response = response as? HTTPURLResponse else {
-            throw HTTPError(reason: "No `HTTPURLResponse` received")
+            throw HatTipError(reason: "No `HTTPURLResponse` received")
         }
         self.statusCode = response.statusCode
         self.headers = response.headers
@@ -20,7 +20,7 @@ extension HTTPResponse {
 
     init(data: Data?, response: URLResponse?, error: Error?) throws {
         try self.init(
-            body: data.map(HTTPMessageBody.data),
+            body: data.map(MessageBody.data),
             response: response,
             error: error
         )
@@ -28,7 +28,7 @@ extension HTTPResponse {
 
     init(file: URL?, response: URLResponse?, error: Error?) throws {
         try self.init(
-            body: file.map(HTTPMessageBody.file),
+            body: file.map(MessageBody.file),
             response: response,
             error: error
         )

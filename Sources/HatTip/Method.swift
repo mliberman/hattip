@@ -1,4 +1,4 @@
-enum HTTPMethod: String, Hashable {
+enum Method: String, Hashable {
     case GET
     case POST
     case PATCH

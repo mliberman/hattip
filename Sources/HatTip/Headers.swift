@@ -1,8 +1,8 @@
-struct HTTPHeaders {
+struct Headers {
 
-    var headers: [HTTPHeader] = []
+    var headers: [Header] = []
 
-    mutating func add(_ header: HTTPHeader) {
+    mutating func add(_ header: Header) {
         self.headers.append(header)
     }
 
@@ -10,13 +10,13 @@ struct HTTPHeaders {
         self.add(.init(name: name, value: value))
     }
 
-    func adding(_ header: HTTPHeader) -> HTTPHeaders {
+    func adding(_ header: Header) -> Headers {
         var result = self
         result.add(header)
         return result
     }
 
-    func adding(name: String, value: String) -> HTTPHeaders {
+    func adding(name: String, value: String) -> Headers {
         return self.adding(.init(name: name, value: value))
     }
 
@@ -24,63 +24,63 @@ struct HTTPHeaders {
         self.headers.removeAll(where: { $0.name == name })
     }
 
-    func removing(name: String) -> HTTPHeaders {
+    func removing(name: String) -> Headers {
         var result = self
         result.remove(name: name)
         return result
     }
 
-    mutating func replaceOrAdd(_ header: HTTPHeader) {
+    mutating func replaceOrAdd(_ header: Header) {
         self.remove(name: header.name)
         self.add(header)
     }
 
-    /// Returns the value of the first `HTTPHeader` found with the given `name`.
+    /// Returns the value of the first `Header` found with the given `name`.
     func value(for name: String) -> String? {
         return self.headers.first(where: { $0.name == name })?.value
     }
 }
 
-extension HTTPHeaders: ExpressibleByArrayLiteral {
+extension Headers: ExpressibleByArrayLiteral {
 
-    init(arrayLiteral elements: HTTPHeader...) {
+    init(arrayLiteral elements: Header...) {
         self.init(headers: elements)
     }
 }
 
-struct HTTPHeader {
+struct Header {
     var name: String
     var value: String
 }
 
-protocol HTTPHeaderType {
+protocol HeaderType {
     static var name: String { get }
     var value: String { get }
 }
 
-extension HTTPHeaderType {
+extension HeaderType {
     var name: String { return Self.name }
-    var header: HTTPHeader { return .init(name: self.name, value: self.value) }
+    var header: Header { return .init(name: self.name, value: self.value) }
 }
 
-protocol BasicHTTPHeaderType: HTTPHeaderType, RawRepresentable where RawValue == String { }
+protocol BasicHeaderType: HeaderType, RawRepresentable where RawValue == String { }
 
-extension BasicHTTPHeaderType {
+extension BasicHeaderType {
     var value: String { return self.rawValue }
 }
 
-extension HTTPHeader {
+extension Header {
 
-    enum ContentType: String, BasicHTTPHeaderType {
+    enum ContentType: String, BasicHeaderType {
         static var name: String { return "Content-Type" }
         case json = "application/json"
     }
 
-    static func contentType(_ value: ContentType) -> HTTPHeader {
+    static func contentType(_ value: ContentType) -> Header {
         return value.header
     }
 
-    enum Authorization: HTTPHeaderType {
+    enum Authorization: HeaderType {
 
         static var name: String { return "Authorization" }
 
@@ -98,7 +98,7 @@ extension HTTPHeader {
         }
     }
 
-    static func authorization(_ value: Authorization) -> HTTPHeader {
+    static func authorization(_ value: Authorization) -> Header {
         return value.header
     }
 }

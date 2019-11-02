@@ -1,13 +1,13 @@
 import Foundation
 
-struct HTTPRequest: HTTPMessage {
-    var method: HTTPMethod = .GET
+struct Request: Message {
+    var method: Method = .GET
     var uri: URI
-    var headers: HTTPHeaders = []
-    var body: HTTPMessageBody?
+    var headers: Headers = []
+    var body: MessageBody?
 }
 
-extension HTTPRequest {
+extension Request {
 
     var urlRequest: URLRequest {
         var urlRequest = URLRequest(url: self.uri.url)

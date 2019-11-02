@@ -1,7 +1,7 @@
-struct HTTPError: Error {
+struct HatTipError: Error {
     var reason: String
 }
 
-extension HTTPError: CustomStringConvertible {
+extension HatTipError: CustomStringConvertible {
     var description: String { return self.reason }
 }

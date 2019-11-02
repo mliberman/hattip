@@ -1,6 +1,6 @@
 import Foundation
 
-extension HTTPRequest {
+extension Request {
 
     /// Encodes the given `json` using the given `encoder`, and sets the `"Content-Type"`
     /// header to `"application/json"`.
@@ -16,7 +16,7 @@ extension HTTPRequest {
     func encoding<B: Encodable>(
         json: B,
         using encoder: JSONEncoder
-        ) throws -> HTTPRequest {
+        ) throws -> Request {
 
         var result = self
         try result.encode(json: json, using: encoder)
@@ -34,7 +34,7 @@ extension HTTPRequest {
     func encoding<B: Encodable>(
         json: B,
         options: JSONEncodingOptions = .default
-        ) throws -> HTTPRequest {
+        ) throws -> Request {
 
         var result = self
         try result.encode(json: json, options: options)
@@ -42,7 +42,7 @@ extension HTTPRequest {
     }
 }
 
-extension HTTPRequest {
+extension Request {
 
     struct JSONEncodingOptions {
 
@@ -55,7 +55,7 @@ extension HTTPRequest {
 
 extension JSONEncoder {
 
-    convenience init(options: HTTPRequest.JSONEncodingOptions) {
+    convenience init(options: Request.JSONEncodingOptions) {
         self.init()
         self.keyEncodingStrategy = options.keyEncodingStrategy
         self.dateEncodingStrategy = options.dateEncodingStrategy
