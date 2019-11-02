@@ -1,5 +1,18 @@
 import Foundation
 
+extension Request {
+
+    var urlRequest: URLRequest {
+        var urlRequest = URLRequest(url: self.uri.url)
+        urlRequest.httpMethod = self.method.rawValue
+        urlRequest.headers = self.headers
+        if case let .data(data) = self.body {
+            urlRequest.httpBody = data
+        }
+        return urlRequest
+    }
+}
+
 extension URLRequest {
 
     var headers: Headers {

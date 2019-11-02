@@ -32,6 +32,14 @@ extension Response {
         }
     }
 
+    func decodeError<E: ServerResponseError>(
+        _ errorType: E.Type = E.self,
+        with options: Response.JSONDecodingOptions = .default
+        ) -> Result<Response, ResponseError> {
+
+        return self.decodeError(errorType, using: .init(options: options))
+    }
+
     func decode<R: Decodable>(
         _ responseType: R.Type = R.self,
         using decoder: JSONDecoder
@@ -51,6 +59,14 @@ extension Response {
         }
     }
 
+    func decode<R: Decodable>(
+        _ responseType: R.Type = R.self,
+        with options: Response.JSONDecodingOptions = .default
+        ) -> Result<R, ResponseError> {
+
+        return self.decode(responseType, using: .init(options: options))
+    }
+
     func decode<R: Decodable, E: ServerResponseError>(
         _ responseType: R.Type = R.self,
         _ errorType: E.Type = E.self,
@@ -60,5 +76,34 @@ extension Response {
         return self
             .decodeError(E.self, using: decoder)
             .flatMap { $0.decode(R.self, E.self, using: decoder) }
+    }
+
+    func decode<R: Decodable, E: ServerResponseError>(
+        _ responseType: R.Type = R.self,
+        _ errorType: E.Type = E.self,
+        with options: Response.JSONDecodingOptions = .default
+        ) -> Result<R, ResponseError> {
+
+        return self.decode(responseType, errorType, using: .init(options: options))
+    }
+}
+
+extension Response {
+
+    struct JSONDecodingOptions {
+
+        var keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys
+        var dateDecodingStrategy: JSONDecoder.DateDecodingStrategy = .deferredToDate
+
+        static var `default`: JSONDecodingOptions { return .init() }
+    }
+}
+
+extension JSONDecoder {
+
+    convenience init(options: Response.JSONDecodingOptions) {
+        self.init()
+        self.keyDecodingStrategy = options.keyDecodingStrategy
+        self.dateDecodingStrategy = options.dateDecodingStrategy
     }
 }

@@ -1,12 +1,5 @@
-//
-//  URITests.swift
-//  http
-//
-//  Created by Max Liberman on 11/2/19.
-//
-
 import Foundation
-@testable import http
+@testable import HatTip
 import XCTest
 
 final class URITests: XCTestCase {

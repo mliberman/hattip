@@ -25,7 +25,7 @@ extension Request {
 
     mutating func encode<B: Encodable>(
         json: B,
-        options: JSONEncodingOptions = .default
+        with options: JSONEncodingOptions = .default
         ) throws {
 
         try self.encode(json: json, using: .init(options: options))
@@ -33,11 +33,11 @@ extension Request {
 
     func encoding<B: Encodable>(
         json: B,
-        options: JSONEncodingOptions = .default
+        with options: JSONEncodingOptions = .default
         ) throws -> Request {
 
         var result = self
-        try result.encode(json: json, options: options)
+        try result.encode(json: json, with: options)
         return result
     }
 }
