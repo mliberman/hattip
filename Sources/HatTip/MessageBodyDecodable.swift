@@ -43,18 +43,29 @@ extension Response {
         }
     }
 
-    struct IgnoreBody: MessageBodyDecodable {
+    struct IgnoreBody: ErrorMessageBodyDecodable {
+
+        var body: MessageBody
 
         static func decode(
             from body: MessageBody?,
             using decoder: JSONDecoder
             ) throws -> Response.IgnoreBody {
 
-            guard body != nil else {
+            guard let body = body else {
                 let reason = "Expected response body for `\(String(describing: type(of: self)))`"
                 throw HatTipError(reason: reason)
             }
-            return .init()
+            return .init(body: body)
+        }
+
+        var description: String {
+            switch self.body {
+            case let .data(data):
+                return String(data: data, encoding: .utf8)!
+            case let .file(url):
+                return url.absoluteString
+            }
         }
     }
 

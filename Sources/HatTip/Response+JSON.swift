@@ -63,7 +63,7 @@ extension Response {
 
         return self
             .decodeError(E.self, using: decoder)
-            .flatMap { $0.decode(R.self, E.self, using: decoder) }
+            .flatMap { $0.decode(R.self, using: decoder) }
     }
 
     func decode<R: MessageBodyDecodable, E: ErrorMessageBodyDecodable>(

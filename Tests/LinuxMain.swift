@@ -1,8 +1,8 @@
 import XCTest
 
-import httpTests
+import HatTipTests
 
 var tests = [XCTestCaseEntry]()
-tests += httpTests.__allTests()
+tests += HatTipTests.__allTests()
 
 XCTMain(tests)
