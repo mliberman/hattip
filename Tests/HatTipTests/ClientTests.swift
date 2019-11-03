@@ -30,7 +30,7 @@ final class ClientTests: XCTestCase {
 
     func testGet() {
 
-        struct Post: Decodable {
+        struct Post: Decodable, MessageBodyDecodable {
             var userId: Int
             var id: Int
             var title: String
