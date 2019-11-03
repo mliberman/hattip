@@ -12,7 +12,7 @@ public protocol APIContract {
     associatedtype ErrorResponseBody: ErrorMessageBodyDecodable = Response.IgnoreBody
 
     typealias DecodedResponse = HatTip.DecodedResponse<Swift.Result<ResponseBody, ResponseError>>
-    typealias Result = Swift.Result<DecodedResponse, MessageSendError>
+    typealias Result = Swift.Result<HatTip.DecodedResponse<ResponseBody>, APIContractError>
 
     var uri: URI { get }
     var headers: Headers { get }
@@ -29,6 +29,30 @@ public enum APIContractError: Error {
     case requestError(RequestError)
     case clientError(Error)
     case responseError(DecodedResponse<ResponseError>)
+}
+
+extension APIContract {
+
+    internal typealias IntermediateResult = Swift.Result<DecodedResponse, MessageSendError>
+
+    internal static func flatten(_ result: Self.IntermediateResult) -> Self.Result {
+        switch result {
+        case let .success(response):
+            switch response.body {
+            case let .success(body):
+                return .success(response.map { _ in body })
+            case let .failure(error):
+                return .failure(.responseError(response.map { _ in error }))
+            }
+        case let .failure(sendError):
+            switch sendError {
+            case let .requestError(error):
+                return .failure(.requestError(error))
+            case let .clientError(error):
+                return .failure(.clientError(error))
+            }
+        }
+    }
 }
 
 extension APIContract {

@@ -13,12 +13,14 @@ extension Client {
                 switch result {
                 case let .success(response):
                     completion(
-                        .success(
-                            response
-                                .decode(
-                                    C.ResponseBody.self,
-                                    C.ErrorResponseBody.self,
-                                    using: C.decoder
+                        C.flatten(
+                            .success(
+                                response
+                                    .decode(
+                                        C.ResponseBody.self,
+                                        C.ErrorResponseBody.self,
+                                        using: C.decoder
+                                )
                             )
                         )
                     )
