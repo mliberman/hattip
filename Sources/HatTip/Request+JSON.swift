@@ -13,8 +13,12 @@ extension Request {
         using encoder: JSONEncoder
         ) throws {
 
-        self.body = try json.encode(using: encoder)
-        self.headers.replaceOrAdd(.contentType(.json))
+        let body = try json.encode(using: encoder)
+        self.body = body
+        self.headers.replaceOrAppend(.contentType(.json))
+        if case let .data(data) = body {
+            self.headers.replaceOrAppend(.contentLength(data.count))
+        }
     }
 
     public func encoding<B: MessageBodyEncodable>(
