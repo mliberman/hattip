@@ -14,6 +14,13 @@ private func makeUri(
     )
 }
 
+private struct Post: Codable, Equatable, MessageBodyEncodable, MessageBodyDecodable {
+    var userId: Int
+    var id: Int
+    var title: String
+    var body: String
+}
+
 final class APIContractTests: XCTestCase {
 
     private var client: Client!
@@ -32,14 +39,7 @@ final class APIContractTests: XCTestCase {
 
         struct GetPost: GetAPIContract {
 
-            struct ResponseBodyType: Decodable, MessageBodyDecodable {
-                var userId: Int
-                var id: Int
-                var title: String
-                var body: String
-            }
-
-            typealias ErrorResponseBodyType = Response.IgnoreBody
+            typealias ResponseBody = Post
 
             var id: Int
 
@@ -59,6 +59,67 @@ final class APIContractTests: XCTestCase {
             expectation.fulfill()
         }
 
-        self.waitForExpectations(timeout: 10)
+        self.waitForExpectations(timeout: 5)
+    }
+
+    func testPostAPIContract() {
+
+        struct PostPost: PostAPIContract {
+
+            struct RequestBody: Encodable, MessageBodyEncodable {
+                var userId: Int
+                var title: String
+                var body: String
+            }
+
+            typealias ResponseBody = Post
+
+            var uri: URI { return makeUri(path: "posts") }
+
+            var requestBody: RequestBody
+        }
+
+        let expectation = self.expectation(description: "completion")
+        let requestBody = PostPost.RequestBody(userId: 1, title: "Test", body: "Test body.")
+        self.client.send(PostPost(requestBody: requestBody)) { result in
+            switch result {
+            case let .success(response):
+                XCTAssertEqual(response.userId, requestBody.userId)
+                XCTAssertEqual(response.title, requestBody.title)
+                XCTAssertEqual(response.body, requestBody.body)
+            case let .failure(error):
+                XCTFail("Unexpected error: \(error)")
+            }
+            expectation.fulfill()
+        }
+
+        self.waitForExpectations(timeout: 5)
+    }
+
+    func testPutAPIContract() {
+
+        struct PutPost: PutAPIContract {
+
+            typealias RequestBody = Post
+            typealias ResponseBody = Post
+
+            var requestBody: RequestBody
+
+            var uri: URI { return makeUri(path: ["posts", "\(self.requestBody.id)"]) }
+        }
+
+        let expectation = self.expectation(description: "completion")
+        let requestBody = Post(userId: 10, id: 1, title: "Title", body: "Body")
+        self.client.send(PutPost(requestBody: requestBody)) { result in
+            switch result {
+            case let .success(response):
+                XCTAssertEqual(response, requestBody)
+            case let .failure(error):
+                XCTFail("Unexpected error: \(error)")
+            }
+            expectation.fulfill()
+        }
+
+        self.waitForExpectations(timeout: 5)
     }
 }

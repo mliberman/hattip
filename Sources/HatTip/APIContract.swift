@@ -5,17 +5,17 @@ protocol APIContract {
     static var method: Method { get }
 
     static var encoder: JSONEncoder { get }
-    associatedtype RequestBodyType: MessageBodyEncodable
+    associatedtype RequestBody: MessageBodyEncodable = Request.NoBody
 
     static var decoder: JSONDecoder { get }
-    associatedtype ResponseBodyType: MessageBodyDecodable
-    associatedtype ErrorResponseBodyType: ErrorMessageBodyDecodable
+    associatedtype ResponseBody: MessageBodyDecodable = Response.NoBody
+    associatedtype ErrorResponseBody: ErrorMessageBodyDecodable = Response.IgnoreBody
 
-    typealias ResultType = Result<ResponseBodyType, MessageError>
+    typealias Result = Swift.Result<ResponseBody, MessageError>
 
     var uri: URI { get }
     var headers: Headers { get }
-    var requestBody: RequestBodyType { get }
+    var requestBody: RequestBody { get }
     var responseBodyHint: Request.ResponseBodyHint { get }
 }
 
@@ -35,7 +35,7 @@ extension APIContract {
 
     var responseBodyHint: Request.ResponseBodyHint { return .data }
 
-    func makeRequest() -> Result<Request, RequestError> {
+    func makeRequest() -> Swift.Result<Request, RequestError> {
         return Request
             .init(
                 method: Self.method,
@@ -47,9 +47,9 @@ extension APIContract {
     }
 }
 
-extension APIContract where RequestBodyType == Request.NoBody {
+extension APIContract where RequestBody == Request.NoBody {
 
-    var requestBody: RequestBodyType {
+    var requestBody: RequestBody {
         return Request.NoBody()
     }
 }
@@ -60,16 +60,16 @@ extension APIContract {
         return .init(options: .init(dateDecodingStrategy: .iso8601))
     }
 
-    func decode(response: Response) -> Result<ResponseBodyType, ResponseError> {
+    func decode(response: Response) -> Swift.Result<ResponseBody, ResponseError> {
         return response.decode(
-            ResponseBodyType.self,
-            ErrorResponseBodyType.self,
+            ResponseBody.self,
+            ErrorResponseBody.self,
             using: Self.decoder
         )
     }
 }
 
-protocol GetAPIContract: APIContract where RequestBodyType == Request.NoBody { }
+protocol GetAPIContract: APIContract where RequestBody == Request.NoBody { }
 
 extension GetAPIContract {
     static var method: Method { return .GET }
@@ -88,6 +88,12 @@ protocol PostAPIContract: APIContract { }
 
 extension PostAPIContract {
     static var method: Method { return .POST }
+}
+
+protocol PutAPIContract: APIContract { }
+
+extension PutAPIContract {
+    static var method: Method { return .PUT }
 }
 
 protocol PatchAPIContract: APIContract { }

@@ -4,7 +4,7 @@ protocol Client {
 
 extension Client {
 
-    func send<C: APIContract>(_ contract: C, completion: @escaping (C.ResultType) -> Void) {
+    func send<C: APIContract>(_ contract: C, completion: @escaping (C.Result) -> Void) {
         switch contract.makeRequest() {
         case let .success(request):
             self.send(request) { result in
@@ -13,8 +13,8 @@ extension Client {
                     completion(
                         response
                             .decode(
-                                C.ResponseBodyType.self,
-                                C.ErrorResponseBodyType.self,
+                                C.ResponseBody.self,
+                                C.ErrorResponseBody.self,
                                 using: C.decoder
                             )
                             .mapError(MessageError.responseError)
