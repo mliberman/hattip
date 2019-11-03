@@ -21,13 +21,13 @@ public protocol APIContract {
 }
 
 public enum MessageSendError: Error {
-    case requestError(RequestError)
     case clientError(Error)
+    case requestError(RequestError)
 }
 
 public enum APIContractError: Error {
-    case requestError(RequestError)
     case clientError(Error)
+    case requestError(RequestError)
     case responseError(DecodedResponse<ResponseError>)
 }
 

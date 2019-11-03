@@ -15,11 +15,10 @@ extension Client {
                     completion(
                         C.flatten(
                             .success(
-                                response
-                                    .decode(
-                                        C.ResponseBody.self,
-                                        C.ErrorResponseBody.self,
-                                        using: C.decoder
+                                response.decode(
+                                    C.ResponseBody.self,
+                                    C.ErrorResponseBody.self,
+                                    using: C.decoder
                                 )
                             )
                         )

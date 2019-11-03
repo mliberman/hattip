@@ -1,5 +1,5 @@
 import Foundation
-@testable import HatTip
+import HatTip
 import XCTest
 
 final class URITests: XCTestCase {

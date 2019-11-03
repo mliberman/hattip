@@ -1,6 +1,10 @@
 public struct Headers {
 
-    public var headers: [Header] = []
+    public var headers: [Header]
+
+    public init(headers: [Header] = []) {
+        self.headers = headers
+    }
 
     public mutating func add(_ header: Header) {
         self.headers.append(header)
@@ -49,8 +53,14 @@ extension Headers: ExpressibleByArrayLiteral {
 }
 
 public struct Header {
+
     public var name: String
     public var value: String
+
+    public init(name: String, value: String) {
+        self.name = name
+        self.value = value
+    }
 }
 
 public protocol HeaderType {

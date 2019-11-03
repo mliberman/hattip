@@ -10,7 +10,12 @@ public struct URI: Equatable {
     }
 
     public struct Path: Equatable {
-        public var components: [String] = []
+
+        public var components: [String]
+
+        public init(components: [String] = []) {
+            self.components = components
+        }
     }
 
     public struct Query: Equatable {
@@ -22,16 +27,39 @@ public struct URI: Equatable {
             public var value: String
         }
 
-        public var items: [Item] = []
+        public var items: [Item]
+
+        public init(items: [Item] = []) {
+            self.items = items
+        }
     }
 
-    public var scheme: Scheme = .https
+    public var scheme: Scheme
     public var user: String?
     public var password: String?
     public var host: String
     public var port: Int?
-    public var path: Path = .empty
+    public var path: Path
     public var query: Query?
+
+    public init(
+        scheme: Scheme = .https,
+        user: String? = nil,
+        password: String? = nil,
+        host: String,
+        port: Int? = nil,
+        path: Path = .empty,
+        query: Query? = nil
+        ) {
+
+        self.scheme = scheme
+        self.user = user
+        self.password = password
+        self.host = host
+        self.port = port
+        self.path = path
+        self.query = query
+    }
 }
 
 extension URI: RawRepresentable {

@@ -14,6 +14,9 @@ extension MessageBodyEncodable where Self: Encodable {
 extension Request {
 
     public struct NoBody: MessageBodyEncodable {
+
+        public init() { }
+
         public func encode(using encoder: JSONEncoder) throws -> MessageBody? {
             return nil
         }
@@ -22,6 +25,10 @@ extension Request {
     public struct FileUpload: MessageBodyEncodable {
 
         public var url: URL
+
+        public init(url: URL) {
+            self.url = url
+        }
 
         public func encode(using encoder: JSONEncoder) throws -> MessageBody? {
             return .file(self.url)

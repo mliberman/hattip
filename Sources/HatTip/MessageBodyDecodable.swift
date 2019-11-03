@@ -19,6 +19,8 @@ extension Response {
 
     public struct NoBody: MessageBodyDecodable {
 
+        public init() { }
+
         public static func decode(
             from body: MessageBody?,
             using decoder: JSONDecoder
@@ -47,6 +49,10 @@ extension Response {
 
         public var body: MessageBody
 
+        public init(body: MessageBody) {
+            self.body = body
+        }
+
         public static func decode(
             from body: MessageBody?,
             using decoder: JSONDecoder
@@ -72,6 +78,10 @@ extension Response {
     public struct FileDownload: MessageBodyDecodable {
 
         public var url: URL
+
+        public init(url: URL) {
+            self.url = url
+        }
 
         public static func decode(
             from body: MessageBody?,

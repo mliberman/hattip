@@ -5,11 +5,6 @@ public enum MessageBody {
     case data(Data)
 }
 
-public protocol Message {
-    var headers: Headers { get set }
-    var body: MessageBody? { get set }
-}
-
 extension MessageBody {
 
     public func read() throws -> Data {
