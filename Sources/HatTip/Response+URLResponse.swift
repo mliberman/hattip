@@ -2,7 +2,7 @@ import Foundation
 
 extension Response {
 
-    init(body: MessageBody?, response: URLResponse?, error: Error?) throws {
+    public init(body: MessageBody?, response: URLResponse?, error: Error?) throws {
         if let error = error { throw error }
         guard let response = response as? HTTPURLResponse else {
             throw HatTipError(reason: "No `HTTPURLResponse` received")
@@ -12,7 +12,7 @@ extension Response {
         self.body = body
     }
 
-    init(data: Data?, response: URLResponse?, error: Error?) throws {
+    public init(data: Data?, response: URLResponse?, error: Error?) throws {
         try self.init(
             body: data.map(MessageBody.data),
             response: response,
@@ -20,7 +20,7 @@ extension Response {
         )
     }
 
-    init(file: URL?, response: URLResponse?, error: Error?) throws {
+    public init(file: URL?, response: URLResponse?, error: Error?) throws {
         try self.init(
             body: file.map(MessageBody.file),
             response: response,
@@ -31,7 +31,7 @@ extension Response {
 
 extension HTTPURLResponse {
 
-    var headers: Headers {
+    public var headers: Headers {
         return Headers(
             headers: self.allHeaderFields
                 .compactMap { (anyName, anyValue) in

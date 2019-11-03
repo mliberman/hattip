@@ -2,7 +2,7 @@ import Foundation
 
 extension Request {
 
-    var urlRequest: URLRequest {
+    public var urlRequest: URLRequest {
         var urlRequest = URLRequest(url: self.uri.url)
         urlRequest.httpMethod = self.method.rawValue
         urlRequest.headers = self.headers
@@ -15,7 +15,7 @@ extension Request {
 
 extension URLRequest {
 
-    var headers: Headers {
+    public var headers: Headers {
         get {
             return self.allHTTPHeaderFields.map { namesAndValues in
                 return Headers(

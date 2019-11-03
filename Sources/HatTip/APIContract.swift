@@ -1,6 +1,6 @@
 import Foundation
 
-protocol APIContract {
+public protocol APIContract {
 
     static var method: Method { get }
 
@@ -11,7 +11,8 @@ protocol APIContract {
     associatedtype ResponseBody: MessageBodyDecodable = Response.NoBody
     associatedtype ErrorResponseBody: ErrorMessageBodyDecodable = Response.IgnoreBody
 
-    typealias Result = Swift.Result<ResponseBody, MessageError>
+    typealias DecodedResponse = HatTip.DecodedResponse<Swift.Result<ResponseBody, ResponseError>>
+    typealias Result = Swift.Result<DecodedResponse, MessageSendError>
 
     var uri: URI { get }
     var headers: Headers { get }
@@ -19,23 +20,22 @@ protocol APIContract {
     var responseBodyHint: Request.ResponseBodyHint { get }
 }
 
-enum MessageError: Error {
+public enum MessageSendError: Error {
     case requestError(RequestError)
     case clientError(Error)
-    case responseError(ResponseError)
 }
 
 extension APIContract {
 
-    static var encoder: JSONEncoder {
+    public static var encoder: JSONEncoder {
         return .init(options: .init(dateEncodingStrategy: .iso8601))
     }
 
-    var headers: Headers { return [] }
+    public var headers: Headers { return [] }
 
-    var responseBodyHint: Request.ResponseBodyHint { return .data }
+    public var responseBodyHint: Request.ResponseBodyHint { return .data }
 
-    func makeRequest() -> Swift.Result<Request, RequestError> {
+    public func makeRequest() -> Swift.Result<Request, RequestError> {
         return Request
             .init(
                 method: Self.method,
@@ -49,18 +49,18 @@ extension APIContract {
 
 extension APIContract where RequestBody == Request.NoBody {
 
-    var requestBody: RequestBody {
+    public var requestBody: RequestBody {
         return Request.NoBody()
     }
 }
 
 extension APIContract {
 
-    static var decoder: JSONDecoder {
+    public static var decoder: JSONDecoder {
         return .init(options: .init(dateDecodingStrategy: .iso8601))
     }
 
-    func decode(response: Response) -> Swift.Result<ResponseBody, ResponseError> {
+    public func decode(response: Response) -> DecodedResponse {
         return response.decode(
             ResponseBody.self,
             ErrorResponseBody.self,
@@ -69,41 +69,41 @@ extension APIContract {
     }
 }
 
-protocol GetAPIContract: APIContract where RequestBody == Request.NoBody { }
+public protocol GetAPIContract: APIContract where RequestBody == Request.NoBody { }
 
 extension GetAPIContract {
-    static var method: Method { return .GET }
+    public static var method: Method { return .GET }
 }
 
-protocol DownloadAPIContract: GetAPIContract {
+public protocol DownloadAPIContract: GetAPIContract {
     var downloadUrl: URL? { get }
 }
 
 extension DownloadAPIContract {
-    var downloadUrl: URL? { return nil }
-    var responseBodyHint: Request.ResponseBodyHint { return .file(url: self.downloadUrl) }
+    public var downloadUrl: URL? { return nil }
+    public var responseBodyHint: Request.ResponseBodyHint { return .file(url: self.downloadUrl) }
 }
 
-protocol PostAPIContract: APIContract { }
+public protocol PostAPIContract: APIContract { }
 
 extension PostAPIContract {
-    static var method: Method { return .POST }
+    public static var method: Method { return .POST }
 }
 
-protocol PutAPIContract: APIContract { }
+public protocol PutAPIContract: APIContract { }
 
 extension PutAPIContract {
-    static var method: Method { return .PUT }
+    public static var method: Method { return .PUT }
 }
 
-protocol PatchAPIContract: APIContract { }
+public protocol PatchAPIContract: APIContract { }
 
 extension PatchAPIContract {
-    static var method: Method { return .PATCH }
+    public static var method: Method { return .PATCH }
 }
 
-protocol DeleteAPIContract: APIContract { }
+public protocol DeleteAPIContract: APIContract { }
 
 extension DeleteAPIContract {
-    static var method: Method { return .DELETE }
+    public static var method: Method { return .DELETE }
 }

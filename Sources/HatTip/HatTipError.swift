@@ -1,7 +1,7 @@
-struct HatTipError: Error {
-    var reason: String
+public struct HatTipError: Error {
+    public var reason: String
 }
 
 extension HatTipError: CustomStringConvertible {
-    var description: String { return self.reason }
+    public var description: String { return self.reason }
 }

@@ -1,12 +1,12 @@
 import Foundation
 
-protocol MessageBodyDecodable {
+public protocol MessageBodyDecodable {
     static func decode(from body: MessageBody?, using decoder: JSONDecoder) throws -> Self
 }
 
 extension MessageBodyDecodable where Self: Decodable {
 
-    static func decode(from body: MessageBody?, using decoder: JSONDecoder) throws -> Self {
+    public static func decode(from body: MessageBody?, using decoder: JSONDecoder) throws -> Self {
         guard let body = body else {
             let reason = "Expected response body for `\(String(describing: type(of: self)))`"
             throw HatTipError(reason: reason)
@@ -17,9 +17,9 @@ extension MessageBodyDecodable where Self: Decodable {
 
 extension Response {
 
-    struct NoBody: MessageBodyDecodable {
+    public struct NoBody: MessageBodyDecodable {
 
-        static func decode(
+        public static func decode(
             from body: MessageBody?,
             using decoder: JSONDecoder
             ) throws -> Response.NoBody {
@@ -43,11 +43,11 @@ extension Response {
         }
     }
 
-    struct IgnoreBody: ErrorMessageBodyDecodable {
+    public struct IgnoreBody: ErrorMessageBodyDecodable {
 
-        var body: MessageBody
+        public var body: MessageBody
 
-        static func decode(
+        public static func decode(
             from body: MessageBody?,
             using decoder: JSONDecoder
             ) throws -> Response.IgnoreBody {
@@ -59,7 +59,7 @@ extension Response {
             return .init(body: body)
         }
 
-        var description: String {
+        public var description: String {
             switch self.body {
             case let .data(data):
                 return String(data: data, encoding: .utf8)!
@@ -69,11 +69,11 @@ extension Response {
         }
     }
 
-    struct FileDownload: MessageBodyDecodable {
+    public struct FileDownload: MessageBodyDecodable {
 
-        var url: URL
+        public var url: URL
 
-        static func decode(
+        public static func decode(
             from body: MessageBody?,
             using decoder: JSONDecoder
             ) throws -> Response.FileDownload {

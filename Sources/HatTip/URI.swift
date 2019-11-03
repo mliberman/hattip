@@ -2,45 +2,45 @@ import Foundation
 
 // MARK: - URI
 
-struct URI: Equatable {
+public struct URI: Equatable {
 
-    enum Scheme: String, Equatable {
+    public enum Scheme: String, Equatable {
         case http
         case https
     }
 
-    struct Path: Equatable {
-        var components: [String] = []
+    public struct Path: Equatable {
+        public var components: [String] = []
     }
 
-    struct Query: Equatable {
+    public struct Query: Equatable {
 
-        static let delimiter: Character = "&"
+        public static let delimiter: Character = "&"
 
-        struct Item: Equatable {
-            var name: String
-            var value: String
+        public struct Item: Equatable {
+            public var name: String
+            public var value: String
         }
 
-        var items: [Item] = []
+        public var items: [Item] = []
     }
 
-    var scheme: Scheme = .https
-    var user: String?
-    var password: String?
-    var host: String
-    var port: Int?
-    var path: Path = .empty
-    var query: Query?
+    public var scheme: Scheme = .https
+    public var user: String?
+    public var password: String?
+    public var host: String
+    public var port: Int?
+    public var path: Path = .empty
+    public var query: Query?
 }
 
 extension URI: RawRepresentable {
 
-    var rawValue: String {
+    public var rawValue: String {
         return self.urlString
     }
 
-    init?(rawValue: String) {
+    public init?(rawValue: String) {
         guard
             let components = URLComponents(string: rawValue),
             let scheme = components.scheme.flatMap({ URI.Scheme(rawValue:$0) }),
@@ -61,7 +61,7 @@ extension URI: RawRepresentable {
 
 extension URI {
 
-    var url: URL {
+    public var url: URL {
         var components = URLComponents()
         components.scheme = self.scheme.rawValue
         components.user = self.user
@@ -73,14 +73,14 @@ extension URI {
         return components.url!
     }
 
-    var urlString: String {
+    public var urlString: String {
         return self.url.absoluteString
     }
 }
 
 extension URI: ExpressibleByStringLiteral {
 
-    init(stringLiteral value: String) {
+    public init(stringLiteral value: String) {
         self.init(rawValue: value)!
     }
 }
@@ -89,60 +89,60 @@ extension URI: ExpressibleByStringLiteral {
 
 extension URI.Path {
 
-    static var empty: URI.Path { return .init() }
+    public static var empty: URI.Path { return .init() }
 
-    mutating func append(_ other: URI.Path) {
+    public mutating func append(_ other: URI.Path) {
         self.components.append(contentsOf: other.components)
     }
 
-    mutating func appending(_ other: URI.Path) -> URI.Path {
+    public mutating func appending(_ other: URI.Path) -> URI.Path {
         var result = self
         result.append(other)
         return result
     }
 
-    mutating func append(_ elements: [String]) {
+    public mutating func append(_ elements: [String]) {
         self.components.append(
             contentsOf: elements.flatMap { $0.split(separator: "/").map(String.init) }
         )
     }
 
-    mutating func append(_ elements: String...) {
+    public mutating func append(_ elements: String...) {
         self.append(elements)
     }
 
-    mutating func appending(_ elements: [String]) -> URI.Path {
+    public mutating func appending(_ elements: [String]) -> URI.Path {
         var result = self
         result.append(elements)
         return result
     }
 
-    mutating func appending(_ elements: String...) -> URI.Path {
+    public mutating func appending(_ elements: String...) -> URI.Path {
         return self.appending(elements)
     }
 }
 
 extension URI.Path: RawRepresentable {
 
-    var rawValue: String {
+    public var rawValue: String {
         return "/" + self.components.joined(separator: "/")
     }
 
-    init(rawValue: String) {
+    public init(rawValue: String) {
         self.components = rawValue.split(separator: "/").map(String.init)
     }
 }
 
 extension URI.Path: ExpressibleByArrayLiteral {
 
-    init(arrayLiteral elements: String...) {
+    public init(arrayLiteral elements: String...) {
         self.components = elements
     }
 }
 
 extension URI.Path: ExpressibleByStringLiteral {
 
-    init(stringLiteral value: String) {
+    public init(stringLiteral value: String) {
         self.init(rawValue: value)
     }
 }
@@ -151,11 +151,11 @@ extension URI.Path: ExpressibleByStringLiteral {
 
 extension URI.Query.Item: RawRepresentable {
 
-    var rawValue: String {
+    public var rawValue: String {
         return "\(self.name)=\(self.value)"
     }
 
-    init?(rawValue: Self.RawValue) {
+    public init?(rawValue: Self.RawValue) {
         let nameAndValue = rawValue.split(separator: "=")
         guard nameAndValue.count == 2 else { return nil }
         self.name = String(nameAndValue[0])
@@ -165,7 +165,7 @@ extension URI.Query.Item: RawRepresentable {
 
 extension URI.Query: RawRepresentable {
 
-    var rawValue: String {
+    public var rawValue: String {
         return self.items
             .map { $0.rawValue }
             .joined(separator: String(Self.delimiter))
@@ -173,7 +173,7 @@ extension URI.Query: RawRepresentable {
     }
 
 
-    init?(rawValue: Self.RawValue) {
+    public init?(rawValue: Self.RawValue) {
         guard let decoded = rawValue.removingPercentEncoding else { return nil }
         self.items = decoded
                 .split(separator: Self.delimiter)
@@ -183,14 +183,14 @@ extension URI.Query: RawRepresentable {
 
 extension URI.Query: ExpressibleByArrayLiteral {
 
-    init(arrayLiteral elements: (String, String)...) {
+    public init(arrayLiteral elements: (String, String)...) {
         self.items = elements.map { URI.Query.Item(name: $0, value: $1) }
     }
 }
 
 extension URI.Query: ExpressibleByStringLiteral {
 
-    init(stringLiteral value: String) {
+    public init(stringLiteral value: String) {
         self.init(rawValue: value)!
     }
 }

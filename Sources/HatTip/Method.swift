@@ -1,4 +1,4 @@
-enum Method: String, Hashable {
+public enum Method: String, Hashable {
     case GET
     case POST
     case PUT

@@ -2,7 +2,7 @@ import Foundation
 
 extension URLSession: Client {
 
-    func send(_ request: Request, completion: @escaping (Result<Response, Error>) -> Void) {
+    public func send(_ request: Request, completion: @escaping (Result<Response, Error>) -> Void) {
         switch request.body {
         case .none, .some(.data):
             switch request.responseBodyHint {

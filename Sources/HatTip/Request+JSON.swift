@@ -1,6 +1,6 @@
 import Foundation
 
-enum RequestError: Error {
+public enum RequestError: Error {
     case encodingError(Error)
 }
 
@@ -8,7 +8,7 @@ extension Request {
 
     /// Encodes the given `json` using the given `encoder`, and sets the `"Content-Type"`
     /// header to `"application/json"`.
-    mutating func encode<B: MessageBodyEncodable>(
+    public mutating func encode<B: MessageBodyEncodable>(
         json: B,
         using encoder: JSONEncoder
         ) throws {
@@ -17,7 +17,7 @@ extension Request {
         self.headers.replaceOrAdd(.contentType(.json))
     }
 
-    func encoding<B: MessageBodyEncodable>(
+    public func encoding<B: MessageBodyEncodable>(
         json: B,
         using encoder: JSONEncoder
         ) -> Result<Request, RequestError> {
@@ -31,7 +31,7 @@ extension Request {
         }
     }
 
-    mutating func encode<B: MessageBodyEncodable>(
+    public mutating func encode<B: MessageBodyEncodable>(
         json: B,
         with options: JSONEncodingOptions = .default
         ) throws {
@@ -39,7 +39,7 @@ extension Request {
         try self.encode(json: json, using: .init(options: options))
     }
 
-    func encoding<B: MessageBodyEncodable>(
+    public func encoding<B: MessageBodyEncodable>(
         json: B,
         with options: JSONEncodingOptions = .default
         ) -> Result<Request, RequestError> {
@@ -56,18 +56,18 @@ extension Request {
 
 extension Request {
 
-    struct JSONEncodingOptions {
+    public struct JSONEncodingOptions {
 
-        var keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy = .useDefaultKeys
-        var dateEncodingStrategy: JSONEncoder.DateEncodingStrategy = .deferredToDate
+        public var keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy = .useDefaultKeys
+        public var dateEncodingStrategy: JSONEncoder.DateEncodingStrategy = .deferredToDate
 
-        static var `default`: JSONEncodingOptions { return .init() }
+        public static var `default`: JSONEncodingOptions { return .init() }
     }
 }
 
 extension JSONEncoder {
 
-    convenience init(options: Request.JSONEncodingOptions) {
+    public convenience init(options: Request.JSONEncodingOptions) {
         self.init()
         self.keyEncodingStrategy = options.keyEncodingStrategy
         self.dateEncodingStrategy = options.dateEncodingStrategy

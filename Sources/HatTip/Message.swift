@@ -1,18 +1,18 @@
 import Foundation
 
-enum MessageBody {
+public enum MessageBody {
     case file(URL)
     case data(Data)
 }
 
-protocol Message {
+public protocol Message {
     var headers: Headers { get set }
     var body: MessageBody? { get set }
 }
 
 extension MessageBody {
 
-    func read() throws -> Data {
+    public func read() throws -> Data {
         switch self {
         case let .data(data):
             return data

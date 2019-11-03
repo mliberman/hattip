@@ -1,29 +1,29 @@
 import Foundation
 
-protocol MessageBodyEncodable {
+public protocol MessageBodyEncodable {
     func encode(using encoder: JSONEncoder) throws -> MessageBody?
 }
 
 extension MessageBodyEncodable where Self: Encodable {
 
-    func encode(using encoder: JSONEncoder) throws -> MessageBody? {
+    public func encode(using encoder: JSONEncoder) throws -> MessageBody? {
         return try .data(encoder.encode(self))
     }
 }
 
 extension Request {
 
-    struct NoBody: MessageBodyEncodable {
-        func encode(using encoder: JSONEncoder) throws -> MessageBody? {
+    public struct NoBody: MessageBodyEncodable {
+        public func encode(using encoder: JSONEncoder) throws -> MessageBody? {
             return nil
         }
     }
 
-    struct FileUpload: MessageBodyEncodable {
+    public struct FileUpload: MessageBodyEncodable {
 
-        var url: URL
+        public var url: URL
 
-        func encode(using encoder: JSONEncoder) throws -> MessageBody? {
+        public func encode(using encoder: JSONEncoder) throws -> MessageBody? {
             return .file(self.url)
         }
     }

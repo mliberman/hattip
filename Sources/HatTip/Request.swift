@@ -1,16 +1,16 @@
 import Foundation
 
-struct Request: Message {
+public struct Request: Message {
 
-    enum ResponseBodyHint {
+    public enum ResponseBodyHint {
         case data
         case file(url: URL? = nil)
     }
 
-    var method: Method = .GET
-    var uri: URI
-    var headers: Headers = []
-    var body: MessageBody?
+    public var method: Method = .GET
+    public var uri: URI
+    public var headers: Headers = []
+    public var body: MessageBody?
 
-    var responseBodyHint: ResponseBodyHint = .data
+    public var responseBodyHint: ResponseBodyHint = .data
 }
