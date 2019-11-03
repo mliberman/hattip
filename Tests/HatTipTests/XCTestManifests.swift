@@ -7,6 +7,8 @@ extension APIContractTests {
     // to regenerate.
     static let __allTests__APIContractTests = [
         ("testGetAPIContract", testGetAPIContract),
+        ("testPostAPIContract", testPostAPIContract),
+        ("testPutAPIContract", testPutAPIContract),
     ]
 }
 

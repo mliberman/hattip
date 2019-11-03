@@ -52,7 +52,12 @@ final class APIContractTests: XCTestCase {
         self.client.send(GetPost(id: 1)) { result in
             switch result {
             case let .success(response):
-                XCTAssertEqual(response.id, 1)
+                switch response.body {
+                case let .success(body):
+                    XCTAssertEqual(body.id, 1)
+                case let .failure(error):
+                    XCTFail("Unexpected error: \(error)")
+                }
             case let .failure(error):
                 XCTFail("Unexpected error: \(error)")
             }
@@ -84,9 +89,14 @@ final class APIContractTests: XCTestCase {
         self.client.send(PostPost(requestBody: requestBody)) { result in
             switch result {
             case let .success(response):
-                XCTAssertEqual(response.userId, requestBody.userId)
-                XCTAssertEqual(response.title, requestBody.title)
-                XCTAssertEqual(response.body, requestBody.body)
+                switch response.body {
+                case let .success(body):
+                    XCTAssertEqual(body.userId, requestBody.userId)
+                    XCTAssertEqual(body.title, requestBody.title)
+                    XCTAssertEqual(body.body, requestBody.body)
+                case let .failure(error):
+                    XCTFail("Unexpected error: \(error)")
+                }
             case let .failure(error):
                 XCTFail("Unexpected error: \(error)")
             }
@@ -113,7 +123,12 @@ final class APIContractTests: XCTestCase {
         self.client.send(PutPost(requestBody: requestBody)) { result in
             switch result {
             case let .success(response):
-                XCTAssertEqual(response, requestBody)
+                switch response.body {
+                case let .success(body):
+                    XCTAssertEqual(body, requestBody)
+                case let .failure(error):
+                    XCTFail("Unexpected error: \(error)")
+                }
             case let .failure(error):
                 XCTFail("Unexpected error: \(error)")
             }

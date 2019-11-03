@@ -25,6 +25,12 @@ public enum MessageSendError: Error {
     case clientError(Error)
 }
 
+public enum APIContractError: Error {
+    case requestError(RequestError)
+    case clientError(Error)
+    case responseError(DecodedResponse<ResponseError>)
+}
+
 extension APIContract {
 
     public static var encoder: JSONEncoder {
