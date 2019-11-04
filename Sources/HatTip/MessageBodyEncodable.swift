@@ -1,13 +1,19 @@
 import Foundation
 
 public protocol MessageBodyEncodable {
-    func encode(using encoder: JSONEncoder) throws -> MessageBody?
+    func encode(using encoder: JSONEncoder) -> Result<MessageBody?, BasicError>
 }
 
 extension MessageBodyEncodable where Self: Encodable {
 
-    public func encode(using encoder: JSONEncoder) throws -> MessageBody? {
-        return try .data(encoder.encode(self))
+    public func encode(using encoder: JSONEncoder) -> Result<MessageBody?, BasicError> {
+        do {
+            return try .success(.data(encoder.encode(self)))
+        } catch let error as EncodingError {
+            return .failure(.init(encodingError: error))
+        } catch let error as NSError {
+            return .failure(.init(unknownError: error))
+        }
     }
 }
 
@@ -17,8 +23,8 @@ extension Request {
 
         public init() { }
 
-        public func encode(using encoder: JSONEncoder) throws -> MessageBody? {
-            return nil
+        public func encode(using encoder: JSONEncoder) -> Result<MessageBody?, BasicError> {
+            return .success(nil)
         }
     }
 
@@ -30,8 +36,8 @@ extension Request {
             self.url = url
         }
 
-        public func encode(using encoder: JSONEncoder) throws -> MessageBody? {
-            return .file(self.url)
+        public func encode(using encoder: JSONEncoder) -> Result<MessageBody?, BasicError> {
+            return .success(.file(self.url))
         }
     }
 }

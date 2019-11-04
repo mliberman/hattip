@@ -1,17 +1,28 @@
 import Foundation
 
 public protocol MessageBodyDecodable {
-    static func decode(from body: MessageBody?, using decoder: JSONDecoder) throws -> Self
+    static func decode(from body: MessageBody?, using decoder: JSONDecoder) -> Result<Self, BasicError>
 }
 
 extension MessageBodyDecodable where Self: Decodable {
 
-    public static func decode(from body: MessageBody?, using decoder: JSONDecoder) throws -> Self {
+    public static func decode(
+        from body: MessageBody?,
+        using decoder: JSONDecoder
+        ) -> Result<Self, BasicError> {
+
         guard let body = body else {
-            let reason = "Expected response body for `\(String(describing: type(of: self)))`"
-            throw HatTipError(reason: reason)
+            let typeName = String(describing: type(of: self))
+            let reason = "Expected response body to decode `\(typeName)`"
+            return .failure(.init(reason: reason))
         }
-        return try decoder.decode(Self.self, from: body.read())
+        do {
+            return try .success(decoder.decode(Self.self, from: body.read()))
+        } catch let error as DecodingError {
+            return .failure(.init(decodingError: error))
+        } catch let error as NSError {
+            return .failure(.init(unknownError: error))
+        }
     }
 }
 
@@ -24,7 +35,7 @@ extension Response {
         public static func decode(
             from body: MessageBody?,
             using decoder: JSONDecoder
-            ) throws -> Response.NoBody {
+            ) -> Result<Response.NoBody, BasicError> {
 
             if let body = body {
                 let typeName = String(describing: type(of: self))
@@ -32,16 +43,17 @@ extension Response {
                 case let .data(data):
                     if let dataString = String(data: data, encoding: .utf8) {
                         let reason = "Unexpected response body for `\(typeName)`: \(dataString)"
-                        throw HatTipError(reason: reason)
+                        return .failure(.init(reason: reason))
                     } else {
-                        throw HatTipError(reason: "Unexpected response body for `\(typeName)`")
+                        let reason = "Unexpected response body for `\(typeName)`"
+                        return .failure(.init(reason: reason))
                     }
                 case let .file(url):
                     let reason = "Unexpected response body for `\(typeName)` at \(url.path)"
-                    throw HatTipError(reason: reason)
+                    return .failure(.init(reason: reason))
                 }
             }
-            return .init()
+            return .success(.init())
         }
     }
 
@@ -56,13 +68,14 @@ extension Response {
         public static func decode(
             from body: MessageBody?,
             using decoder: JSONDecoder
-            ) throws -> Response.IgnoreBody {
+            ) -> Result<Response.IgnoreBody, BasicError> {
 
             guard let body = body else {
-                let reason = "Expected response body for `\(String(describing: type(of: self)))`"
-                throw HatTipError(reason: reason)
+                let typeName = String(describing: type(of: self))
+                let reason = "Expected response body to decode `\(typeName)`"
+                return .failure(.init(reason: reason))
             }
-            return .init(body: body)
+            return .success(.init(body: body))
         }
 
         public var description: String {
@@ -86,18 +99,18 @@ extension Response {
         public static func decode(
             from body: MessageBody?,
             using decoder: JSONDecoder
-            ) throws -> Response.FileDownload {
+            ) -> Result<Response.FileDownload, BasicError> {
 
             let typeName = String(describing: type(of: self))
             guard let body = body else {
                 let reason = "Expected response body for `\(typeName)`"
-                throw HatTipError(reason: reason)
+                return .failure(.init(reason: reason))
             }
             guard case let .file(url) = body else {
                 let reason = "Expected file download for `\(typeName)`"
-                throw HatTipError(reason: reason)
+                return .failure(.init(reason: reason))
             }
-            return .init(url: url)
+            return .success(.init(url: url))
         }
     }
 }

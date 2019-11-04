@@ -1,60 +1,36 @@
 import Foundation
 
-public enum RequestError: Error {
-    case encodingError(Error)
-}
-
 extension Request {
 
-    /// Encodes the given `json` using the given `encoder`, and sets the `"Content-Type"`
-    /// header to `"application/json"`.
-    public mutating func encode<B: MessageBodyEncodable>(
-        json: B,
-        using encoder: JSONEncoder
-        ) throws {
-
-        let body = try json.encode(using: encoder)
-        self.body = body
-        self.headers.replaceOrAppend(.contentType(.json))
-        if case let .data(data) = body {
-            self.headers.replaceOrAppend(.contentLength(data.count))
-        }
-    }
-
+    /// Encodes a request body as JSON data into the receiver's `body`.
+    ///
+    /// - Parameters:
+    ///   - json: The `MessageBodyEncodable` request body to encode.
+    ///   - encoder: The `JSONEncoder` to use to encode `json`.
+    /// - Returns: A `Result` structure holding either a copy of the
+    /// receiver with the encoded `body`, or the error thrown during
+    /// encoding.
     public func encoding<B: MessageBodyEncodable>(
         json: B,
         using encoder: JSONEncoder
-        ) -> Result<Request, RequestError> {
+        ) -> Result<Request, BasicError> {
 
-        do {
-            var result = self
-            try result.encode(json: json, using: encoder)
-            return .success(result)
-        } catch {
-            return .failure(.encodingError(error))
-        }
-    }
-
-    public mutating func encode<B: MessageBodyEncodable>(
-        json: B,
-        with options: JSONEncodingOptions = .default
-        ) throws {
-
-        try self.encode(json: json, using: .init(options: options))
+        return json
+            .encode(using: encoder)
+            .map { body in
+                var result = self
+                result.body = body
+                result.headers.replaceOrAppend(.contentType(.json))
+                return result
+            }
     }
 
     public func encoding<B: MessageBodyEncodable>(
         json: B,
         with options: JSONEncodingOptions = .default
-        ) -> Result<Request, RequestError> {
+        ) -> Result<Request, BasicError> {
 
-        do {
-            var result = self
-            try result.encode(json: json, with: options)
-            return .success(result)
-        } catch {
-            return .failure(.encodingError(error))
-        }
+        return self.encoding(json: json, using: .init(options: options))
     }
 }
 

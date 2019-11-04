@@ -371,13 +371,27 @@ public struct URI: Equatable, RawRepresentable, CustomStringConvertible, Express
         self.query = components.query.map(URI.Query.init(queryString:))
     }
 
-    /// Returns a URI string formed by combining the receiver's components.
+    /// Returns the receiver as a string in the origin form.
+    ///
+    /// The `URI`'s components are combined in the form:
+    /// ```
+    /// path[?query]
+    /// ```
+    public var originString: String {
+        var result = self.path.pathString
+        if let queryString = self.query?.queryString, !queryString.isEmpty {
+            result += "?\(queryString)"
+        }
+        return result
+    }
+
+    /// Returns the receiver as a string in the absolute form.
     ///
     /// The `URI`'s components are combined in the form:
     /// ```
     /// scheme://[[user:[password]@]host[:port]]path[?query]
     /// ```
-    public var uriString: String {
+    public var absoluteString: String {
         var result = "\(self.scheme.rawValue)://"
         if let host = self.host {
             if let user = self.user {
@@ -388,21 +402,18 @@ public struct URI: Equatable, RawRepresentable, CustomStringConvertible, Express
                 result += ":\(port)"
             }
         }
-        result += self.path.pathString
-        if let queryString = self.query?.queryString, !queryString.isEmpty {
-            result += "?\(queryString)"
-        }
+        result += self.originString
         return result
     }
 
-    /// Returns a `URL` constructed from the receiver's `uriString`.
+    /// Returns a `URL` constructed from the receiver's `absoluteString`.
     public var url: URL {
-        return URL(string: self.uriString)!
+        return URL(string: self.absoluteString)!
     }
 
     /// See `RawRepresentable`.
     public var rawValue: String {
-        return self.uriString
+        return self.absoluteString
     }
 
     /// See `RawRepresentable`.
@@ -412,7 +423,7 @@ public struct URI: Equatable, RawRepresentable, CustomStringConvertible, Express
 
     /// See `CustomStringConvertible`.
     public var description: String {
-        return self.uriString
+        return self.absoluteString
     }
 
     /// See `ExpressibleByStringLiteral`.

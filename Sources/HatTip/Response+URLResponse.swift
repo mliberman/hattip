@@ -2,29 +2,72 @@ import Foundation
 
 extension Response {
 
-    public init(body: MessageBody?, response: URLResponse?, error: Error?) throws {
-        if let error = error { throw error }
-        guard let response = response as? HTTPURLResponse else {
-            throw HatTipError(reason: "No `HTTPURLResponse` received")
-        }
-        self.statusCode = response.statusCode
-        self.headers = response.headers
-        self.body = body
-    }
+    public static func make(
+        body: MessageBody?,
+        response: URLResponse?,
+        error: NSError?,
+        file: String = #file,
+        line: UInt = #line
+        ) -> Result<Response, BasicError> {
 
-    public init(data: Data?, response: URLResponse?, error: Error?) throws {
-        try self.init(
-            body: data.map(MessageBody.data),
-            response: response,
-            error: error
+        if let error = error {
+            return .failure(
+                .init(
+                    urlError: error,
+                    file: file,
+                    line: line
+                )
+            )
+        }
+        guard let response = response as? HTTPURLResponse else {
+            return .failure(
+                BasicError(
+                    reason: "No `HTTPURLResponse`",
+                    file: file,
+                    line: line
+                )
+            )
+        }
+        return .success(
+            .init(
+                statusCode: response.statusCode,
+                headers: response.headers,
+                body: body
+            )
         )
     }
 
-    public init(file: URL?, response: URLResponse?, error: Error?) throws {
-        try self.init(
-            body: file.map(MessageBody.file),
+    public static func make(
+        data: Data?,
+        response: URLResponse?,
+        error: NSError?,
+        file: String = #file,
+        line: UInt = #line
+        ) -> Result<Response, BasicError> {
+
+        return self.make(
+            body: data.map(MessageBody.data),
             response: response,
-            error: error
+            error: error,
+            file: file,
+            line: line
+        )
+    }
+
+    public static func make(
+        url: URL?,
+        response: URLResponse?,
+        error: NSError?,
+        file: String = #file,
+        line: UInt = #line
+        ) -> Result<Response, BasicError> {
+
+        return self.make(
+            body: url.map(MessageBody.file),
+            response: response,
+            error: error,
+            file: file,
+            line: line
         )
     }
 }

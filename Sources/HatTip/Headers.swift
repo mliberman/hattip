@@ -1,9 +1,8 @@
 /// `Headers` represents a set of HTTP header fields as an array of `Header`
 /// structures, each composed of a field name and field value.
 ///
-/// Several convenience functions are available to add, remove, and query
-/// headers. All header field name comparisons are performed in a
-/// case-insensitive manner.
+/// - Note: All header field name comparisons are performed in a case-insensitive
+/// manner.
 public struct Headers {
 
     public var headers: [Header]
@@ -129,28 +128,6 @@ extension BasicHeaderType {
 }
 
 extension Header {
-
-    /// The `"Content-Length"` header field.
-    public struct ContentLength: HeaderType {
-
-        public static var name: String { return "Content-Length" }
-
-        public var length: Int
-
-        public init(_ length: Int) {
-            self.length = length
-        }
-
-        public var value: String { return "\(self.length)" }
-    }
-
-    /// Creates a `"Content-Length"` header field.
-    ///
-    /// - Parameter length: The length to use as the header field value.
-    /// - Returns: The `"Content-Length"` header field.
-    public static func contentLength(_ length: Int) -> Header {
-        return ContentLength(length).header
-    }
 
     /// The `"Content-Type"` header field.
     public enum ContentType: String, BasicHeaderType {

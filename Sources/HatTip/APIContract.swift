@@ -11,8 +11,8 @@ public protocol APIContract {
     associatedtype ResponseBody: MessageBodyDecodable = Response.NoBody
     associatedtype ErrorResponseBody: ErrorMessageBodyDecodable = Response.IgnoreBody
 
-    typealias DecodedResponse = HatTip.DecodedResponse<Swift.Result<ResponseBody, ResponseError>>
-    typealias Result = Swift.Result<HatTip.DecodedResponse<ResponseBody>, APIContractError>
+    typealias DecodedResponse = HatTip.DecodedResponse<Swift.Result<ResponseBody, BasicError>>
+    typealias Result = Swift.Result<HatTip.DecodedResponse<ResponseBody>, BasicError>
 
     var uri: URI { get }
     var headers: Headers { get }
@@ -20,36 +20,17 @@ public protocol APIContract {
     var responseBodyHint: Request.ResponseBodyHint { get }
 }
 
-public enum MessageSendError: Error {
-    case clientError(Error)
-    case requestError(RequestError)
-}
-
-public enum APIContractError: Error {
-    case clientError(Error)
-    case requestError(RequestError)
-    case responseError(DecodedResponse<ResponseError>)
-}
-
 extension APIContract {
 
-    internal typealias IntermediateResult = Swift.Result<DecodedResponse, MessageSendError>
+    internal typealias IntermediateResult = Swift.Result<DecodedResponse, BasicError>
 
     internal static func flatten(_ result: Self.IntermediateResult) -> Self.Result {
-        switch result {
-        case let .success(response):
+        return result.flatMap { response in
             switch response.body {
             case let .success(body):
                 return .success(response.map { _ in body })
             case let .failure(error):
-                return .failure(.responseError(response.map { _ in error }))
-            }
-        case let .failure(sendError):
-            switch sendError {
-            case let .requestError(error):
-                return .failure(.requestError(error))
-            case let .clientError(error):
-                return .failure(.clientError(error))
+                return .failure(error)
             }
         }
     }
@@ -65,7 +46,7 @@ extension APIContract {
 
     public var responseBodyHint: Request.ResponseBodyHint { return .data }
 
-    public func makeRequest() -> Swift.Result<Request, RequestError> {
+    public func makeRequest() -> Swift.Result<Request, BasicError> {
         return Request
             .init(
                 method: Self.method,

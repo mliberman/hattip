@@ -4,13 +4,6 @@ import XCTest
 
 final class URITests: XCTestCase {
 
-    func test() {
-
-        let queryString = "name0=value0&name1=value1"
-        let query = URI.Query(queryString: queryString)
-        print(query.items)
-    }
-
     func testUrl() {
         XCTAssertEqual(
             URI(scheme: .https, host: "www.example.com").url.absoluteString,

@@ -1,11 +1,5 @@
 import Foundation
 
-public enum ResponseError: Error {
-    case noBody
-    case decodingError(Error)
-    case serverMessage(String)
-}
-
 public protocol ErrorMessageBodyDecodable: Error, MessageBodyDecodable, CustomStringConvertible { }
 
 extension Response {
@@ -13,47 +7,52 @@ extension Response {
     internal func decodeError<E: ErrorMessageBodyDecodable>(
         _ errorType: E.Type = E.self,
         using decoder: JSONDecoder
-        ) -> DecodedResponse<Result<Response, ResponseError>> {
+        ) -> Result<Response, BasicError> {
 
-        guard self.statusCode >= 400 else {
-            return self.decoded(with: .success(self))
-        }
+        guard self.statusCode >= 400 else { return .success(self) }
         guard let body = self.body else {
-            return self.decoded(with: .failure(.noBody))
+            let typeName = String(describing: errorType)
+            let reason = "Expected response body to decode `\(typeName)`"
+            return .failure(.init(reason: reason))
         }
-        do {
-            let serverError = try E.decode(from: body, using: decoder)
-            return self.decoded(with: .failure(.serverMessage(serverError.description)))
-        } catch {
-            return self.decoded(with: .failure(.decodingError(error)))
+        switch E.decode(from: body, using: decoder) {
+        case let .success(error):
+            return .failure(
+                .init(
+                    reason: "[\(String(describing: type(of: error)))] \(error.description)",
+                    underlyingError: error
+                )
+            )
+        case let .failure(error):
+            return .failure(error)
         }
     }
 
     internal func decodeError<E: ErrorMessageBodyDecodable>(
         _ errorType: E.Type = E.self,
-        with options: Response.JSONDecodingOptions = .default
-        ) -> DecodedResponse<Result<Response, ResponseError>> {
+        using decoder: JSONDecoder
+        ) -> DecodedResponse<Result<Response, BasicError>> {
 
-        return self.decodeError(errorType, using: .init(options: options))
+        return self.decoded(with: self.decodeError(errorType, using: decoder))
     }
 
     internal func decode<R: MessageBodyDecodable>(
         _ responseType: R.Type = R.self,
         using decoder: JSONDecoder
-        ) -> Result<R, ResponseError> {
+        ) -> Result<R, BasicError> {
 
-        guard let body = self.body else { return .failure(.noBody) }
-        do {
-            return try .success(R.decode(from: body, using: decoder))
-        } catch {
-            return .failure(.decodingError(error))
+        guard let body = self.body else {
+            let typeName = String(describing: responseType)
+            let reason = "Expected response body to decode `\(typeName)`"
+            return .failure(.init(reason: reason))
         }
+        return R.decode(from: body, using: decoder)
     }
 
     public func decode<R: MessageBodyDecodable>(
         _ responseType: R.Type = R.self,
         using decoder: JSONDecoder
-        ) -> DecodedResponse<Result<R, ResponseError>> {
+        ) -> DecodedResponse<Result<R, BasicError>> {
 
         return self.decoded(with: self.decode(R.self, using: decoder))
     }
@@ -61,7 +60,7 @@ extension Response {
     public func decode<R: MessageBodyDecodable>(
         _ responseType: R.Type = R.self,
         with options: Response.JSONDecodingOptions = .default
-        ) -> DecodedResponse<Result<R, ResponseError>> {
+        ) -> DecodedResponse<Result<R, BasicError>> {
 
         return self.decode(responseType, using: .init(options: options))
     }
@@ -70,7 +69,7 @@ extension Response {
         _ responseType: R.Type = R.self,
         _ errorType: E.Type = E.self,
         using decoder: JSONDecoder
-        ) -> DecodedResponse<Result<R, ResponseError>> {
+        ) -> DecodedResponse<Result<R, BasicError>> {
 
         return self
             .decodeError(E.self, using: decoder)
@@ -81,7 +80,7 @@ extension Response {
         _ responseType: R.Type = R.self,
         _ errorType: E.Type = E.self,
         with options: Response.JSONDecodingOptions = .default
-        ) -> DecodedResponse<Result<R, ResponseError>> {
+        ) -> DecodedResponse<Result<R, BasicError>> {
 
         return self.decode(responseType, errorType, using: .init(options: options))
     }

@@ -1,9 +1,10 @@
+/// An HTTP request method.
 public enum Method: String, Hashable {
     case GET
+    case HEAD
     case POST
     case PUT
-    case PATCH
     case DELETE
-    case HEAD
     case OPTIONS
+    case PATCH
 }

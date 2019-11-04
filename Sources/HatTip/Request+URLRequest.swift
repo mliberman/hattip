@@ -2,6 +2,7 @@ import Foundation
 
 extension Request {
 
+    /// Returns a `URLRequest` structure populated by the receiver's properties.
     public var urlRequest: URLRequest {
         var urlRequest = URLRequest(url: self.uri.url)
         urlRequest.httpMethod = self.method.rawValue
@@ -15,6 +16,8 @@ extension Request {
 
 extension URLRequest {
 
+    /// Converts between a `Headers` structure and the `URLRequest`'s
+    /// `allHTTPHeaderFields` dictionary property.
     public var headers: Headers {
         get {
             return self.allHTTPHeaderFields.map { namesAndValues in

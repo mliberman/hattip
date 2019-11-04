@@ -24,11 +24,11 @@ extension Client {
                         )
                     )
                 case let .failure(error):
-                    completion(.failure(.clientError(error)))
+                    completion(.failure(error))
                 }
             }
         case let .failure(error):
-            completion(.failure(.requestError(error)))
+            completion(.failure(error))
         }
     }
 }
