@@ -50,9 +50,7 @@ extension URLSession: Client {
                 )
             }
             do {
-                let dst = destination ?? FileManager.default
-                    .temporaryDirectory
-                    .appendingPathComponent(UUID().uuidString, isDirectory: false)
+                let dst = destination ?? Self.makeFile()
                 try? FileManager.default.removeItem(at: dst)
                 try FileManager.default.moveItem(at: tmpUrl, to: dst)
                 completion(
@@ -62,8 +60,8 @@ extension URLSession: Client {
                         error: error as NSError?
                     )
                 )
-            } catch {
-                completion(.failure(.init(fileError: error as NSError)))
+            } catch let error as NSError {
+                completion(.failure(.init(fileError: error)))
             }
         }
         task.resume()
@@ -76,14 +74,47 @@ extension URLSession: Client {
         ) {
 
         let task = self.uploadTask(with: request.urlRequest, fromFile: source) { (data, response, error) in
-            completion(
-                Response.make(
-                    data: data,
-                    response: response,
-                    error: error as NSError?
+            switch request.responseBodyHint {
+            case .data:
+                return completion(
+                    Response.make(
+                        data: data,
+                        response: response,
+                        error: error as NSError?
+                    )
                 )
-            )
+            case let .file(url):
+                guard let data = data else {
+                    return completion(
+                        Response.make(
+                            data: nil,
+                            response: response,
+                            error: error as NSError?
+                        )
+                    )
+                }
+                do {
+                    let dst = url ?? Self.makeFile()
+                    try? FileManager.default.removeItem(at: dst)
+                    try data.write(to: dst, options: .atomic)
+                    return completion(
+                        Response.make(
+                            url: dst,
+                            response: response,
+                            error: error as NSError?
+                        )
+                    )
+                } catch let error as NSError {
+                    return completion(.failure(.init(fileError: error)))
+                }
+            }
         }
         task.resume()
+    }
+
+    static private func makeFile() -> URL {
+        return FileManager.default
+            .temporaryDirectory
+            .appendingPathComponent(UUID().uuidString, isDirectory: false)
     }
 }
