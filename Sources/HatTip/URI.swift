@@ -1,6 +1,6 @@
 import Foundation
 
-/// A structure representing the components of a uniform resource identifier (URI).
+/// A structure that represents the components of a uniform resource identifier (URI).
 ///
 /// The components of the URI are combined to form the full URI string:
 /// ```

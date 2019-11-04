@@ -1,6 +1,6 @@
 import Foundation
 
-/// A structure representing an HTTP request message.
+/// A structure that represents an HTTP request message.
 public struct Request: CustomStringConvertible {
 
     /// A hint to the client indicating how the response's body should be
@@ -26,9 +26,9 @@ public struct Request: CustomStringConvertible {
     ///
     /// - Parameters:
     ///   - method: The HTTP method for this request.
-    ///   - uri: The target URI for this method.
-    ///   - headers: The headers to be sent with this request.
-    ///   - body: The optional message body to be sent with this request.
+    ///   - uri: The target URI for this request.
+    ///   - headers: The HTTP header fields for this request.
+    ///   - body: The optional HTTP message body for this request.
     ///   - responseBodyHint: The optional response body hint for the client
     ///   processing this request.
     public init(

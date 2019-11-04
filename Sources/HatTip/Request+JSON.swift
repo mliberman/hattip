@@ -25,6 +25,14 @@ extension Request {
             }
     }
 
+    /// Encodes a request body as JSON data into the receiver's `body`.
+    ///
+    /// - Parameters:
+    ///   - json: The `MessageBodyEncodable` request body to encode.
+    ///   - options: Options used to create a `JSONEncoder` for the encoding.
+    /// - Returns: A `Result` structure holding either a copy of the
+    /// receiver with the encoded `body`, or the error thrown during
+    /// encoding.
     public func encoding<B: MessageBodyEncodable>(
         json: B,
         with options: JSONEncodingOptions = .default
@@ -36,6 +44,7 @@ extension Request {
 
 extension Request {
 
+    /// A structure containing configurable properties of a `JSONEncoder`.
     public struct JSONEncodingOptions {
 
         public var keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy = .useDefaultKeys
@@ -47,6 +56,9 @@ extension Request {
 
 extension JSONEncoder {
 
+    /// Initializes a `JSONEncoder` and applies the properties contained in `options`.
+    ///
+    /// - Parameter options: The propertiess to assign to the `JSONEncoder`.
     public convenience init(options: Request.JSONEncodingOptions) {
         self.init()
         self.keyEncodingStrategy = options.keyEncodingStrategy

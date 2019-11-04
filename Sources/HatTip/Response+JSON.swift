@@ -1,5 +1,6 @@
 import Foundation
 
+/// A protocol for decodable response bodies that represent errors from the request target.
 public protocol ErrorMessageBodyDecodable: Error, MessageBodyDecodable, CustomStringConvertible { }
 
 extension Response {

@@ -1,9 +1,21 @@
 import Foundation
 
+/// A protocol that enables types to be decoded from JSON
+/// HTTP message response bodies.
 public protocol MessageBodyDecodable {
+
+    /// Decodes an instance of the type from an HTTP message body
+    /// using the provided decoder.
+    ///
+    /// - Parameters:
+    ///   - body: The HTTP response message body to decode.
+    ///   - decoder: The decoder to use.
+    /// - Returns: A decoded instance of the type, or an error thrown
+    /// during decoding.
     static func decode(from body: MessageBody?, using decoder: JSONDecoder) -> Result<Self, BasicError>
 }
 
+/// Automatic `MessageBodyEncodable` conformance for `Encodable` types.
 extension MessageBodyDecodable where Self: Decodable {
 
     public static func decode(
@@ -28,6 +40,11 @@ extension MessageBodyDecodable where Self: Decodable {
 
 extension Response {
 
+    /// An empty structure that "decodes" from an empty response body.
+    ///
+    /// - Note: `NoBody.decode(from:using:)` will return a `.failure`
+    /// if it encounters a non-empty response body. Use `IgnoreBody` to
+    /// explicitly ignore non-empty response bodies.
     public struct NoBody: MessageBodyDecodable {
 
         public init() { }
@@ -57,6 +74,12 @@ extension Response {
         }
     }
 
+    /// An structure that "decodes" from a non-empty response body
+    /// by simply storing the raw body.
+    ///
+    /// - Note: `IgnoreBody.decode(from:using:)` will return a `.failure`
+    /// if it encounters an empty response body. Use `NoBody` to handle
+    /// empty response bodies.
     public struct IgnoreBody: ErrorMessageBodyDecodable {
 
         public var body: MessageBody
@@ -88,6 +111,8 @@ extension Response {
         }
     }
 
+    /// A structure containing a URL that "decodes" itself from a
+    /// `MessageBody.file` for file downloads.
     public struct FileDownload: MessageBodyDecodable {
 
         public var url: URL
