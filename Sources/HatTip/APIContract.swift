@@ -18,9 +18,13 @@ public protocol APIContract {
     var headers: Headers { get }
     var requestBody: RequestBody { get }
     var responseBodyHint: Request.ResponseBodyHint { get }
+
+    func prepareRequest(_ request: inout Request) throws
 }
 
 extension APIContract {
+
+    public func prepareRequest(_ request: inout Request) throws { }
 
     internal typealias IntermediateResult = Swift.Result<DecodedResponse, BasicError>
 
@@ -47,7 +51,7 @@ extension APIContract {
     public var responseBodyHint: Request.ResponseBodyHint { return .data }
 
     public func makeRequest() -> Swift.Result<Request, BasicError> {
-        return Request
+        let result = Request
             .init(
                 method: Self.method,
                 uri: self.uri,
@@ -55,6 +59,15 @@ extension APIContract {
                 responseBodyHint: self.responseBodyHint
             )
             .encoding(json: self.requestBody, using: Self.encoder)
+        guard case var .success(request) = result else { return result }
+        do {
+            try self.prepareRequest(&request)
+            return .success(request)
+        } catch let basicError as BasicError {
+            return .failure(basicError)
+        } catch {
+            return .failure(.init(unknownError: error as NSError))
+        }
     }
 }
 
