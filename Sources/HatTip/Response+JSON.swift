@@ -91,8 +91,17 @@ extension Response {
 
     public struct JSONDecodingOptions {
 
-        public var keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys
-        public var dateDecodingStrategy: JSONDecoder.DateDecodingStrategy = .deferredToDate
+        public var keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy
+        public var dateDecodingStrategy: JSONDecoder.DateDecodingStrategy
+
+        public init(
+            keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys,
+            dateDecodingStrategy: JSONDecoder.DateDecodingStrategy = .deferredToDate
+            ) {
+
+            self.keyDecodingStrategy = keyDecodingStrategy
+            self.dateDecodingStrategy = dateDecodingStrategy
+        }
 
         public static var `default`: JSONDecodingOptions { return .init() }
     }

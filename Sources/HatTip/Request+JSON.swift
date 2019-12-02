@@ -47,8 +47,17 @@ extension Request {
     /// A structure containing configurable properties of a `JSONEncoder`.
     public struct JSONEncodingOptions {
 
-        public var keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy = .useDefaultKeys
-        public var dateEncodingStrategy: JSONEncoder.DateEncodingStrategy = .deferredToDate
+        public var keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy
+        public var dateEncodingStrategy: JSONEncoder.DateEncodingStrategy
+
+        public init(
+            keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy = .useDefaultKeys,
+            dateEncodingStrategy: JSONEncoder.DateEncodingStrategy = .deferredToDate
+            ) {
+
+            self.keyEncodingStrategy = keyEncodingStrategy
+            self.dateEncodingStrategy = dateEncodingStrategy
+        }
 
         public static var `default`: JSONEncodingOptions { return .init() }
     }
