@@ -2,8 +2,6 @@ import Foundation
 
 public protocol APIContract {
 
-    static var method: Method { get }
-
     static var encoder: JSONEncoder { get }
     associatedtype RequestBody: MessageBodyEncodable = Request.NoBody
 
@@ -14,6 +12,7 @@ public protocol APIContract {
     typealias DecodedResponse = HatTip.DecodedResponse<Swift.Result<ResponseBody, BasicError>>
     typealias Result = Swift.Result<HatTip.DecodedResponse<ResponseBody>, BasicError>
 
+    var method: Method { get }
     var uri: URI { get }
     var headers: Headers { get }
     var requestBody: RequestBody { get }
@@ -53,7 +52,7 @@ extension APIContract {
     public func makeRequest() -> Swift.Result<Request, BasicError> {
         let result = Request
             .init(
-                method: Self.method,
+                method: self.method,
                 uri: self.uri,
                 headers: self.headers,
                 responseBodyHint: self.responseBodyHint
@@ -95,39 +94,12 @@ extension APIContract {
 
 public protocol GetAPIContract: APIContract where RequestBody == Request.NoBody { }
 
-extension GetAPIContract {
-    public static var method: Method { return .GET }
-}
-
 public protocol DownloadAPIContract: GetAPIContract {
     var downloadUrl: URL? { get }
 }
 
 extension DownloadAPIContract {
+    public var method: Method { return .GET }
     public var downloadUrl: URL? { return nil }
     public var responseBodyHint: Request.ResponseBodyHint { return .file(url: self.downloadUrl) }
-}
-
-public protocol PostAPIContract: APIContract { }
-
-extension PostAPIContract {
-    public static var method: Method { return .POST }
-}
-
-public protocol PutAPIContract: APIContract { }
-
-extension PutAPIContract {
-    public static var method: Method { return .PUT }
-}
-
-public protocol PatchAPIContract: APIContract { }
-
-extension PatchAPIContract {
-    public static var method: Method { return .PATCH }
-}
-
-public protocol DeleteAPIContract: APIContract { }
-
-extension DeleteAPIContract {
-    public static var method: Method { return .DELETE }
 }

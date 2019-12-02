@@ -37,9 +37,11 @@ final class APIContractTests: XCTestCase {
 
     func testGetAPIContract() {
 
-        struct GetPost: GetAPIContract {
+        struct GetPost: APIContract {
 
             typealias ResponseBody = Post
+
+            var method: HatTip.Method { return .GET }
 
             var id: Int
 
@@ -64,7 +66,7 @@ final class APIContractTests: XCTestCase {
 
     func testPostAPIContract() {
 
-        struct PostPost: PostAPIContract {
+        struct PostPost: APIContract {
 
             struct RequestBody: Encodable, MessageBodyEncodable {
                 var userId: Int
@@ -73,6 +75,8 @@ final class APIContractTests: XCTestCase {
             }
 
             typealias ResponseBody = Post
+
+            var method: HatTip.Method { return .POST }
 
             var uri: URI { return makeUri(path: "posts") }
 
@@ -98,10 +102,12 @@ final class APIContractTests: XCTestCase {
 
     func testPutAPIContract() {
 
-        struct PutPost: PutAPIContract {
+        struct PutPost: APIContract {
 
             typealias RequestBody = Post
             typealias ResponseBody = Post
+
+            var method: HatTip.Method { return .PUT }
 
             var requestBody: RequestBody
 
