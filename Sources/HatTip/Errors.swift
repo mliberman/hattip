@@ -298,7 +298,7 @@ extension DecodingError {
              let .keyNotFound(_, context),
              let .typeMismatch(_, context),
              let .valueNotFound(_, context):
-            return context.debugDescription
+            return "[ \(context.codingPath.map({ $0.stringValue }).joined(separator: " > ")) ]: \(context.debugDescription)"
         @unknown default:
             return self.failureReason ?? "Unknown error"
         }
