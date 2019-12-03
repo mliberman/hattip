@@ -19,11 +19,15 @@ public protocol APIContract {
     var responseBodyHint: Request.ResponseBodyHint { get }
 
     func prepareRequest(_ request: inout Request) throws
+
+    func didReceiveResponse(_ response: Response, for request: Request)
 }
 
 extension APIContract {
 
     public func prepareRequest(_ request: inout Request) throws { }
+
+    public func didReceiveResponse(_ response: Response, for request: Request) { }
 
     internal typealias IntermediateResult = Swift.Result<DecodedResponse, BasicError>
 

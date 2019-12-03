@@ -12,6 +12,7 @@ extension Client {
             self.send(request) { result in
                 switch result {
                 case let .success(response):
+                    contract.didReceiveResponse(response, for: request)
                     completion(
                         C.flatten(
                             .success(
