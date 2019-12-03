@@ -1,5 +1,5 @@
 /// A structure that represents an HTTP response message.
-public struct Response {
+public struct Response: CustomStringConvertible {
 
     public var statusCode: Int
     public var headers: Headers
@@ -20,6 +20,22 @@ public struct Response {
         self.statusCode = statusCode
         self.headers = headers
         self.body = body
+    }
+
+    /// The textual representation of this HTTP response message.
+    public var message: String {
+        var lines = ["HTTP/1.1 \(self.statusCode)"]
+        lines += self.headers.headers.map { "\($0.name): \($0.value)" }
+        if case let .some(.data(data)) = self.body,
+            let body = String(data: data, encoding: .utf8) {
+                lines.append(body)
+        }
+        return lines.joined(separator: "\n")
+    }
+
+    // See `CustomStringConvertible`
+    public var description: String {
+        return self.message
     }
 }
 
