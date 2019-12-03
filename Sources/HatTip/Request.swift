@@ -16,7 +16,7 @@ public struct Request: CustomStringConvertible {
         case file(url: URL? = nil)
     }
 
-    public var method: Method
+    public var method: HTTPMethod
     public var uri: URI
     public var headers: Headers
     public var body: MessageBody?
@@ -32,7 +32,7 @@ public struct Request: CustomStringConvertible {
     ///   - responseBodyHint: The optional response body hint for the client
     ///   processing this request.
     public init(
-        method: Method = .GET,
+        method: HTTPMethod = .GET,
         uri: URI,
         headers: Headers = [],
         body: MessageBody? = nil,

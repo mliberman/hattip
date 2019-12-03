@@ -12,7 +12,7 @@ public protocol APIContract {
     typealias DecodedResponse = HatTip.DecodedResponse<Swift.Result<ResponseBody, BasicError>>
     typealias Result = Swift.Result<HatTip.DecodedResponse<ResponseBody>, BasicError>
 
-    var method: Method { get }
+    var method: HTTPMethod { get }
     var uri: URI { get }
     var headers: Headers { get }
     var requestBody: RequestBody { get }
@@ -99,7 +99,7 @@ public protocol DownloadAPIContract: GetAPIContract {
 }
 
 extension DownloadAPIContract {
-    public var method: Method { return .GET }
+    public var method: HTTPMethod { return .GET }
     public var downloadUrl: URL? { return nil }
     public var responseBodyHint: Request.ResponseBodyHint { return .file(url: self.downloadUrl) }
 }

@@ -41,7 +41,7 @@ final class APIContractTests: XCTestCase {
 
             typealias ResponseBody = Post
 
-            var method: HatTip.Method { return .GET }
+            var method: HTTPMethod { return .GET }
 
             var id: Int
 
@@ -76,7 +76,7 @@ final class APIContractTests: XCTestCase {
 
             typealias ResponseBody = Post
 
-            var method: HatTip.Method { return .POST }
+            var method: HTTPMethod { return .POST }
 
             var uri: URI { return makeUri(path: "posts") }
 
@@ -107,7 +107,7 @@ final class APIContractTests: XCTestCase {
             typealias RequestBody = Post
             typealias ResponseBody = Post
 
-            var method: HatTip.Method { return .PUT }
+            var method: HTTPMethod { return .PUT }
 
             var requestBody: RequestBody
 

@@ -1,5 +1,5 @@
 /// An HTTP request method.
-public enum Method: String, Hashable {
+public enum HTTPMethod: String, Hashable {
     case GET
     case HEAD
     case POST
