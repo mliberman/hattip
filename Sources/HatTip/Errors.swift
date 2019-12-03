@@ -28,8 +28,7 @@ public struct BasicError: Error, CustomStringConvertible {
 
     /// See `CustomStringConvertible`.
     public var description: String {
-        let typeName = self.underlyingError.map { String(describing: type(of: $0)) }
-        return "\(typeName.map { "[\($0)] " } ?? "")\(reason) (\(self.filename):L\(self.line))"
+        return "\(self.reason) (\(self.filename):L\(self.line))"
     }
 }
 
