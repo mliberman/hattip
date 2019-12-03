@@ -59,3 +59,10 @@ extension Request {
 extension Array: MessageBodyEncodable where Element: Encodable { }
 
 extension Dictionary: MessageBodyEncodable where Key: Encodable, Value: Encodable { }
+
+extension Data: MessageBodyEncodable {
+
+    public func encode(using encoder: JSONEncoder) -> Result<MessageBody, BasicError> {
+        return .success(.data(self))
+    }
+}
